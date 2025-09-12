@@ -8,16 +8,12 @@ library(tibble)
 library(readr)
 library(seqinr)
 
-setwd("/projet/externe/univ/agutierrez/Antonia/dada2/TAN2101_MC")
-
-project_name <- "TAN2101_Minicosm"
-
-fastq_dir <-    "/projet/externe/univ/agutierrez/Antonia/dada2/TAN2101_MC/fastq"
+fastq_dir <-    "/fastq"/ #insert path to fastq folder
 filtered_dir <- "./fastq_filtered/"
 qual_dir <-     "./qual_pdf/"      
 dada2_dir <-    "./dada2/"     
 blast_dir <-    "./blast/"           
-database_dir <- "/projet/externe/univ/agutierrez/Antonia/dada2/TAN1802/database/pr2_version_4.12.0_18S_dada2.fasta.gz" 
+database_dir <- "/database"/ #PR2 database files (contains PR2 database formatted for dada2 - https://github.com/pr2database/pr2database/releases/)           
 
 dir.create(filtered_dir)
 dir.create(qual_dir)
@@ -124,16 +120,16 @@ write.csv(track, str_c(dada2_dir, "track.txt"))
 DB_file <- paste0(database_dir)
 taxa <- assignTaxonomy(seqtab.nochim, refFasta=DB_file, taxLevels = DB_levels, minBoot = 0, outputBootstraps = TRUE, verbose = TRUE)
 
-saveRDS(taxa, str_c(dada2_dir, "TAN2101_MC.taxa.rds"))
+saveRDS(taxa, str_c(dada2_dir, "project_name.taxa.rds"))
 
 
 print(paste("__##__assignTaxonomy finished__##__"))
 
 
-taxa <-  readRDS(str_c(dada2_dir, "TAN2101_MC.taxa.rds"))  
+taxa <-  readRDS(str_c(dada2_dir, "project_name.taxa.rds"))  
 write.csv(as.tibble(taxa$tax), str_c(dada2_dir, "taxa.txt"))  
 write.csv(as.tibble(taxa$boot), str_c(dada2_dir, "taxa_boot.txt"))
-write.csv(seqtab.nochim, str_c(dada2_dir, "TAN2101_MC_seqtab2.txt"))
+write.csv(seqtab.nochim, str_c(dada2_dir, "project_name_seqtab2.txt"))
 
 taxa_tax <- as.data.frame(taxa$tax)
 taxa_boot <- as.data.frame(taxa$boot)
@@ -155,7 +151,7 @@ seqtab.nochim_18S <- seqtab.nochim_trans[taxa_boot$Supergroup >= bootstrap_min,]
 write_tsv(as.tibble(seqtab.nochim_18S, header=T, row.names=T), str_c(dada2_dir, "seqtab_nonchim_18S.txt"))
  
 dada2_database <-   bind_cols(taxa_tax_18S, seqtab.nochim_18S)
-write_tsv(dada2_database, str_c(dada2_dir, "TAN2101_MC.database.tsv"))
+write_tsv(dada2_database, str_c(dada2_dir, "project_name.database.tsv"))
 	
 df <-  dada2_database %>%  mutate(sequence = str_replace_all(sequence, "(-|\\.)",""))
 
@@ -171,7 +167,7 @@ names(seq_out) <- str_c(df$OTUNumber,
                                 df$Species,
                                 sep="|")
 
-Biostrings::writeXStringSet(seq_out, str_c(blast_dir, "TAN2101_MC_ASV.fasta"), compress=FALSE, width = 20000)
+Biostrings::writeXStringSet(seq_out, str_c(blast_dir, "project_name_ASV.fasta"), compress=FALSE, width = 20000)
   
 
 
