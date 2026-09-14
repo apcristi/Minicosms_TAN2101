@@ -1,7 +1,7 @@
 ---
 title: "Minicosms_metabarcoding"
 author: "Antonia"
-date: "15 Jam 2026"
+date: "15th Jan 2026"
 output: html_document
 ---
 
